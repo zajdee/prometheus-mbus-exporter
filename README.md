@@ -34,32 +34,32 @@ Follow the [PRO380 User Manual] to hook the meter up to the power grid. If your 
   * 12V power source was hooked up to SLC-33 pins 21 and 22 (mind the polarity!)
   * dip switches needed to be moved to the right position (RS-232 mode)
 * Serial port connection:
- * serial port pin 2 (RxD) to SLC-33 pin 11 (Tx)
- * serial port pin 3 (TxD) to SLC-33 pin 12 (Rx)
- * serial port pin 5 (GND) to SLC-33 pin 13 (SG)
+  * serial port pin 2 (RxD) to SLC-33 pin 11 (Tx)
+  * serial port pin 3 (TxD) to SLC-33 pin 12 (Rx)
+  * serial port pin 5 (GND) to SLC-33 pin 13 (SG)
 
 To ease the serial port connection, I have also bought a cheap serial-to-serial RS232 cable ([ROLINE RS232 Cable, DB9 M-F]), cut the cable, and only used the female connector + cable connected to it.
 
 ## Software installation
 1. Create `/opt/power_meter` directory and clone this repo to it.
 2. Build and install `libmbus` to get the `mbus-serial-request-data` binary.
-  1. Install build dependencies (Debian): `apt-get -y install build-essential devscripts`
-  2. Clone the `libmbus` repo: `https://github.com/rscada/libmbus`
-  3. Build Debian package: `cd libmbus && ./build-deb.sh`
-  4. Install the built package (Debian), which is in the directory parent to the one where the package is built, e.g. `dpkg -i ../libmbus1_0.8.0_arm64.deb`
+   1. Install build dependencies (Debian): `apt-get -y install build-essential devscripts`
+   2. Clone the `libmbus` repo: `https://github.com/rscada/libmbus`
+   3. Build Debian package: `cd libmbus && ./build-deb.sh`
+   4. Install the built package (Debian), which is in the directory parent to the one where the package is built, e.g. `dpkg -i ../libmbus1_0.8.0_arm64.deb`
 3. Install Python requirements for this tool. Run `pip3 install -m requirements.txt`.
-  1. If you are a more advanced Python user, you can of course use a [Python virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+   1. If you are a more advanced Python user, you can of course use a [Python virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 4. Create unique and stable symlink to the serial port device.
-  1. Edit and deploy `10-usbports.rules` to `/etc/udev/rules.d/` to create the `/dev/ttymeterBus` symlink to the real serial device.
-  2. Update your `initramfs`, e.g. by running `update-initramfs -k all -u`.
-  3. Reboot for the symlink to get created.
+   1. Edit and deploy `10-usbports.rules` to `/etc/udev/rules.d/` to create the `/dev/ttymeterBus` symlink to the real serial device.
+   2. Update your `initramfs`, e.g. by running `update-initramfs -k all -u`.
+   3. Reboot for the symlink to get created.
 5. Configure the exporter
-  1. Copy `prometheus-mbus-exporter.yml.example` to `prometheus-mbus-exporter.yml`
-  2. Edit baud rate, meter ID, serial port name, metrics webserver TCP port, and location.
-  3. The default baud rate is `2400`, default meter ID is zero (`0`); both can be changed via the meter user interface.
+   1. Copy `prometheus-mbus-exporter.yml.example` to `prometheus-mbus-exporter.yml`
+   2. Edit baud rate, meter ID, serial port name, metrics webserver TCP port, and location.
+   3. The default baud rate is `2400`, default meter ID is zero (`0`); both can be changed via the meter user interface.
 6. Configure `systemd`
-  1. Deploy `power_meter_prometheus_exporter.service` to `/etc/systemd/system/`
-  2. Run `systemctl daemon-reload && systemctl enable power_meter_prometheus.service && systemctl start power_meter_prometheus.service`
+   1. Deploy `power_meter_prometheus_exporter.service` to `/etc/systemd/system/`
+   2. Run `systemctl daemon-reload && systemctl enable power_meter_prometheus.service && systemctl start power_meter_prometheus.service`
 7. Call `curl http://localhost:<port-number>/metrics` and observe the counters
 8. Configure your Prometheus instance to collect the data from the exporter endpoint. 
 
