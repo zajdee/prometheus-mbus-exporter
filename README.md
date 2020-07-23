@@ -2,7 +2,7 @@
 This repository contains the instructions on how to build the infrastructure to collect data about the usage of electricity and make these data available to [Prometheus](https://prometheus.io/) time series database.
 
 ## Hardware installation
-This module was developed for and tested with the [inepro PRO380-MB power meter]. This meter device provides a simple [M-Bus](https://en.wikipedia.org/wiki/Meter-Bus) based interface to read the usage data. Writing in the meter registers is not possible.
+This module was developed for and tested with the [inepro PRO380-MB power meter] which supports three phases. This meter device provides a simple [M-Bus](https://en.wikipedia.org/wiki/Meter-Bus) based interface to read the usage data. Writing in the meter registers is not possible. There is also a [1-phase version, PRO1-MB], available, however this code was not tested with it yet.
 
 ![PRO380-MB](images/PRO380.png)
 
@@ -49,6 +49,7 @@ To ease the serial port connection, I have also bought a cheap serial-to-serial 
    4. Install the built package (Debian), which is in the directory parent to the one where the package is built, e.g. `dpkg -i ../libmbus1_0.8.0_arm64.deb`
 3. Install Python requirements for this tool. Run `pip3 install -m requirements.txt`.
    1. If you are a more advanced Python user, you can of course use a [Python virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+   2. If you wish the exporter to listen on IPv6 sockets (for example to use `address: '::'` in the `.yml` config file), upgrade the `prometheus_client` library to version `0.8.0` or newer by running `pip3 install --upgrade prometheus_client>=0.8.0`, then manually patch `exposition.py` according to [Issue #567](https://github.com/prometheus/client_python/issues/567) bug report on GitHub.
 4. Create unique and stable symlink to the serial port device.
    1. Edit and deploy `10-usbports.rules` to `/etc/udev/rules.d/` to create the `/dev/ttymeterBus` symlink to the real serial device.
    2. Update your `initramfs`, e.g. by running `update-initramfs -k all -u`.
@@ -85,6 +86,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 Except as contained in this notice, the name of a copyright holder shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Software without prior written authorization of the copyright holder.
 
 [inepro PRO380-MB power meter]: https://ineprometering.com/pro380/
+[1-phase version, PRO1-MB]: https://ineprometering.com/pro1/#Types
 [Elsaco SLC-33 M-Bus to serial]: http://www.elsaco.cz/index.php?file=./produkty/piggy/628_slc33.php
 [PremiumCord USB 2.0 -> RS-232]: https://www.gmelectronic.com/converter-usb2-0-to-serial-port-com-premiumcord-ku2-232a
 [ROLINE RS232 Cable, DB9 M-F]: https://www.secomp.co.uk/en_GB/roline-rs232-cable-db9-m-f-1-8-m/i/11016218
