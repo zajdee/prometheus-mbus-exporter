@@ -1,0 +1,8 @@
+mbus:
+  device: /dev/ttymeterBus
+  baud_rate: 2400
+  meter_id: 0
+exporter:
+  location: YourLocation
+  port: 9118
+  address: 0.0.0.0

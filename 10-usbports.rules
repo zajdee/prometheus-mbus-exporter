@@ -1,0 +1,10 @@
+# udevadm info -a -n /dev/ttyUSBx
+# looking at parent device '/devices/platform/soc/3f980000.usb/usb1/1-1/1-1.5/1-1.5:1.0':
+# ATTRS{interface}=="Papouch QUIDO USB 2/2"
+# ATTRS{product}=="Papouch QUIDO USB 2/2"
+# ATTRS{serial}=="PP3F5QJ9"
+# don't forget to also run
+#  update-initramfs -k all -u
+#
+# mbus - power meter
+ACTION=="add", ATTRS{interface}=="FT232R USB UART", SYMLINK+="ttymeterBus"
